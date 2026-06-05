@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('student_progress_photos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('student_progress_id')->constrained('student_progress')->cascadeOnDelete();
+            $table->string('photo_path');
+            $table->string('type')->nullable(); // front, side, back
             $table->timestamps();
         });
     }

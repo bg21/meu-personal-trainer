@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('financial_plans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->decimal('amount', 10, 2);
+            $table->integer('due_day'); // 1-31
+            $table->string('status')->default('active'); // active, cancelled
             $table->timestamps();
         });
     }

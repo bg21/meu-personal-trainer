@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('financial_plan_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->decimal('amount', 10, 2);
+            $table->date('due_date');
+            $table->date('paid_at')->nullable();
+            $table->string('status')->default('pending'); // pending, paid, overdue
+            $table->string('payment_method')->nullable();
             $table->timestamps();
         });
     }

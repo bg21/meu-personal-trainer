@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('workout_plans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->string('name'); // e.g. "Hipertrofia A"
+            $table->text('description')->nullable();
+            $table->string('level')->nullable(); // beginner, intermediate, advanced
             $table->timestamps();
         });
     }
