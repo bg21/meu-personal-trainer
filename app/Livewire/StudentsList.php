@@ -74,16 +74,28 @@ class StudentsList extends Component
     {
         $this->validate();
 
+        // Fallback robusto para o tenant_id caso não haja usuário logado (ambiente de dev)
+        $tenantId = auth()->check() ? auth()->user()->tenant_id : \App\Models\Tenant::firstOrCreate(
+            ['id' => 1],
+            ['name' => 'Personal Trainer Default', 'slug' => 'personal-default']
+        )->id;
+
+        $data = [
+            'tenant_id' => $tenantId,
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'goal' => $this->goal,
+            'status' => $this->studentStatus,
+        ];
+
+        if (!$this->studentId) {
+            $data['access_token'] = \Illuminate\Support\Str::random(32);
+        }
+
         Student::updateOrCreate(
             ['id' => $this->studentId],
-            [
-                // 'tenant_id' => auth()->user()->tenant_id, 
-                'name' => $this->name,
-                'email' => $this->email,
-                'phone' => $this->phone,
-                'goal' => $this->goal,
-                'status' => $this->studentStatus,
-            ]
+            $data
         );
 
         $this->showModal = false;

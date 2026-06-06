@@ -1,20 +1,19 @@
 <div>
-    <x-slot name="headerActions">
-        <x-ui.button variant="primary" icon="plus" wire:click="openModal">Novo Aluno</x-ui.button>
-    </x-slot>
-
-    <!-- Filters Section -->
-    <div class="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+    <!-- Page Header & Actions inside the Livewire Component -->
+    <div class="mb-6 flex flex-col sm:flex-row gap-4 items-end justify-between">
         <div class="w-full sm:w-1/3">
+            <x-ui.label for="search">Buscar Alunos</x-ui.label>
             <x-ui.input 
+                id="search"
                 wire:model.live.debounce.300ms="search" 
                 placeholder="Buscar por nome ou e-mail..." 
                 icon="search" 
             />
         </div>
 
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-            <div class="bg-[var(--bg-card)] border border-[var(--border-default)] p-1 rounded-[var(--radius-element)] flex text-[13px] font-medium">
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            <!-- Status Filter -->
+            <div class="bg-[var(--bg-card)] border border-[var(--border-default)] p-1 rounded-[var(--radius-element)] flex text-[13px] font-medium w-full sm:w-auto">
                 <button 
                     wire:click="$set('status', 'all')" 
                     class="px-4 py-1.5 rounded-[6px] transition-colors {{ $status === 'all' ? 'bg-[var(--border-default)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]' }}"
@@ -28,6 +27,11 @@
                     class="px-4 py-1.5 rounded-[6px] transition-colors {{ $status === 'pending' ? 'bg-[var(--warning-light)] text-[var(--warning)] border border-[var(--warning-light)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]' }}"
                 >Pendentes</button>
             </div>
+
+            <!-- Action Button -->
+            <x-ui.button variant="primary" icon="plus" wire:click="openModal" class="w-full sm:w-auto">
+                Novo Aluno
+            </x-ui.button>
         </div>
     </div>
 
@@ -77,7 +81,9 @@
                             <td class="px-6 py-4 whitespace-nowrap text-right">
                                 <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <x-ui.button variant="ghost" size="icon" icon="pencil" title="Editar" wire:click="editStudent({{ $student->id }})" />
-                                    <x-ui.button variant="ghost" size="icon" icon="external-link" title="Acessar Portal" />
+                                    <a href="{{ route('students.show', $student->id) }}" class="inline-flex">
+                                        <x-ui.button type="button" variant="ghost" size="icon" icon="external-link" title="Acessar Perfil" />
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -106,13 +112,19 @@
     </div>
 
     <!-- Create/Edit Modal -->
-    <x-ui.modal name="student-modal" maxWidth="lg">
+    <x-ui.modal name="student-modal" wire:model="showModal" maxWidth="lg">
         <form wire:submit="save">
-            <div class="px-6 py-5 border-b border-[var(--border-default)]">
-                <h3 class="display-font text-[16px] font-medium text-[var(--text-primary)]">
-                    {{ $studentId ? 'Editar Aluno' : 'Novo Aluno' }}
-                </h3>
-                <p class="text-[12px] text-[var(--text-secondary)] mt-1">Preencha as informações básicas do aluno abaixo.</p>
+            <div class="px-6 py-5 border-b border-[var(--border-default)] flex items-start justify-between">
+                <div>
+                    <h3 class="display-font text-[16px] font-medium text-[var(--text-primary)]">
+                        {{ $studentId ? 'Editar Aluno' : 'Novo Aluno' }}
+                    </h3>
+                    <p class="text-[12px] text-[var(--text-secondary)] mt-1">Preencha as informações básicas do aluno abaixo.</p>
+                </div>
+                <!-- Close Button X -->
+                <button type="button" wire:click="$set('showModal', false)" class="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-md hover:bg-[var(--border-default)] focus:outline-none">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
             
             <div class="p-6 space-y-4">
@@ -158,7 +170,7 @@
             </div>
 
             <div class="px-6 py-4 border-t border-[var(--border-default)] bg-[var(--bg-card-hover)] flex justify-end gap-3">
-                <x-ui.button type="button" variant="ghost" @click="$dispatch('close-modal', 'student-modal')">Cancelar</x-ui.button>
+                <x-ui.button type="button" variant="ghost" wire:click="$set('showModal', false)">Cancelar</x-ui.button>
                 <x-ui.button type="submit" variant="primary">
                     <span wire:loading.remove wire:target="save">{{ $studentId ? 'Salvar Alterações' : 'Cadastrar Aluno' }}</span>
                     <span wire:loading wire:target="save">Salvando...</span>
