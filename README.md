@@ -128,4 +128,4 @@ Arquivo de referência: `database/schema.sql`
 
 ## Desenvolvido por
 
-Juliana — [geradororcamentos](../geradororcamentos) · [PetControle](../petcontrole)
+Juliana
